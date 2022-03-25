@@ -1,11 +1,17 @@
+import { ThemeProvider } from '@mui/material';
 import React from 'react';
-import DataTable from './components/DataTable';
+import GlobalStyle, { PageContainer } from './globalStyle';
+import DataPage from './pages/DataPage';
+import { darkTheme } from './theme';
 
 const App = () => {
   return (
-    <div className="App">
-      <DataTable />
-    </div>
+    <ThemeProvider theme={darkTheme}>
+      <GlobalStyle />
+      <PageContainer>
+        <DataPage />
+      </PageContainer>
+    </ThemeProvider>
   );
 };
 

@@ -1,9 +1,9 @@
 import React from 'react';
 import styled from 'styled-components';
-import DataTable from '../components/DataTable';
 import Navbar from '../components/Navbar';
+import DataTable from '../components/table/DataTable';
 
-const DataPageContainer = styled.div`
+export const DataPageContainer = styled.div`
   display: flex;
   flex-direction: column;
   justify-content: center;

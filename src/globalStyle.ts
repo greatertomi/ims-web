@@ -9,7 +9,7 @@ const GlobalStyle = createGlobalStyle`
   }
 `;
 
-export const PageContainer = muiStyled(Box)(({ theme }) => ({
+export const AppContainer = muiStyled(Box)(({ theme }) => ({
   background: theme.palette.background.default,
   minHeight: '100vh',
   width: '100%',

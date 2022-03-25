@@ -1,10 +1,10 @@
 import { DataGrid } from '@mui/x-data-grid';
 import React from 'react';
 import styled from 'styled-components';
-import { people } from '../mocks/data';
+import { people } from '../../mocks/data';
 import { columns } from './DataTableDefinition';
 
-const TableContainer = styled.div`
+export const TableContainer = styled.div`
   height: 650px;
   width: 80%;
   background: #1a1c28;
@@ -21,7 +21,7 @@ const DataTable = () => {
         rows={people}
         columns={columns}
         pageSize={10}
-        rowsPerPageOptions={[5]}
+        rowsPerPageOptions={[10]}
       />
     </TableContainer>
   );

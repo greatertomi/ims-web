@@ -1,15 +1,27 @@
 import { Button } from '@mui/material';
 import { GridColDef, GridValueGetterParams } from '@mui/x-data-grid';
 import React from 'react';
+import { Link } from 'react-router-dom';
 
 const renderActionButton = (params: any) => {
   const onClick = () => {
-    console.log('button clicked');
+    console.log('button clicked', params);
   };
   return (
-    <Button onClick={onClick} variant="contained" size="small">
-      Edit
-    </Button>
+    <>
+      <Button onClick={onClick} variant="contained" size="small">
+        Edit
+      </Button>
+      <Button
+        component={Link}
+        to={`/products/${params.id}`}
+        variant="contained"
+        size="small"
+        sx={{ ml: 2 }}
+      >
+        View
+      </Button>
+    </>
   );
 };
 

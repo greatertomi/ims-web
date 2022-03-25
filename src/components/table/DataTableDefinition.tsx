@@ -1,15 +1,28 @@
 import { Button } from '@mui/material';
 import { GridColDef, GridValueGetterParams } from '@mui/x-data-grid';
-import React from 'react';
+import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
+import ProductDialog from '../product/ProductDialog';
 
 const renderActionButton = (params: any) => {
+  const [open, setOpen] = useState(false);
+
   const onClick = () => {
     console.log('button clicked', params);
   };
+
+  const handleModalClose = () => {
+    setOpen(false);
+  };
+
+  const handleModalOpen = () => {
+    setOpen(true);
+    onClick();
+  };
+
   return (
     <>
-      <Button onClick={onClick} variant="contained" size="small">
+      <Button onClick={handleModalOpen} variant="contained" size="small">
         Edit
       </Button>
       <Button
@@ -21,6 +34,7 @@ const renderActionButton = (params: any) => {
       >
         View
       </Button>
+      <ProductDialog open={open} onClose={handleModalClose} />
     </>
   );
 };

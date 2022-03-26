@@ -12,41 +12,52 @@ import {
   TextField,
 } from '@mui/material';
 import React, { FC } from 'react';
+import { productLocations } from '../../mocks/data';
 
 interface ProductDialogProps {
+  productName: string;
   open: boolean;
   onClose: () => void;
+  onSaveData: (values: any) => void;
 }
 
-const ProductDialog: FC<ProductDialogProps> = ({ open, onClose }) => {
+const ProductDialog: FC<ProductDialogProps> = ({
+  productName,
+  open,
+  onClose,
+  onSaveData,
+}) => {
+  const locations = productLocations;
   return (
     <div>
       <Dialog open={open} onClose={onClose}>
         <DialogTitle>Update Quantity</DialogTitle>
         <DialogContent>
-          <Box mb={2}>Product Name</Box>
-          <FormControl fullWidth>
-            <InputLabel id="location-select">Age</InputLabel>
+          <Box mb={2}>{productName}</Box>
+          <FormControl fullWidth sx={{ mb: 2 }}>
+            <InputLabel id="location-select">Locations</InputLabel>
             <Select
               labelId="location-select"
               id="location"
-              value={10}
-              label="Age"
+              value={locations[0].location}
+              label="Locations"
               size="small"
             >
-              <MenuItem value={10}>Ten</MenuItem>
-              <MenuItem value={20}>Twenty</MenuItem>
-              <MenuItem value={30}>Thirty</MenuItem>
+              {locations.map(({ warehouse, location, quantity }) => (
+                <MenuItem value={location}>
+                  {warehouse} ({location}) - {quantity}
+                </MenuItem>
+              ))}
             </Select>
           </FormControl>
-          <Box display="flex" alignItems="center" gap={1} mt={1}>
+          <Box display="flex" alignItems="center" gap={1} mb={2}>
             <FormControl sx={{ width: 150 }}>
               <InputLabel id="action-select">Action</InputLabel>
               <Select
                 labelId="action-select"
                 id="action"
                 value="add"
-                label="Age"
+                label="Action"
                 size="small"
               >
                 <MenuItem value="add">Add</MenuItem>
@@ -66,7 +77,7 @@ const ProductDialog: FC<ProductDialogProps> = ({ open, onClose }) => {
         </DialogContent>
         <DialogActions>
           <Button onClick={onClose}>Cancel</Button>
-          <Button onClick={onClose} variant="contained" color="primary">
+          <Button onClick={onSaveData} variant="contained" color="primary">
             Save
           </Button>
         </DialogActions>

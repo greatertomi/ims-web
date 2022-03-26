@@ -1,12 +1,14 @@
+import { Alert, Snackbar } from '@mui/material';
 import { DataGrid } from '@mui/x-data-grid';
 import React from 'react';
 import styled from 'styled-components';
-import { people } from '../../mocks/data';
+import { useProductContext } from '../../context/ProductContext';
+import { products } from '../../mocks/data';
 import { columns } from './DataTableDefinition';
 
 export const TableContainer = styled.div`
   height: 650px;
-  width: 80%;
+  width: 90%;
   background: #1a1c28;
   margin-top: 30px;
   box-shadow: 0 1px 1px hsl(0deg 0% 0% / 0.075),
@@ -15,15 +17,33 @@ export const TableContainer = styled.div`
 `;
 
 const DataTable = () => {
+  const { showSnackbar, updateShowSnackbar } = useProductContext();
+
   return (
-    <TableContainer>
-      <DataGrid
-        rows={people}
-        columns={columns}
-        pageSize={10}
-        rowsPerPageOptions={[10]}
-      />
-    </TableContainer>
+    <>
+      <TableContainer>
+        <DataGrid
+          rows={products}
+          columns={columns}
+          pageSize={10}
+          rowsPerPageOptions={[10]}
+        />
+      </TableContainer>
+      <Snackbar
+        anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
+        open={showSnackbar}
+        autoHideDuration={6000}
+        onClose={() => updateShowSnackbar(false)}
+      >
+        <Alert
+          onClose={() => updateShowSnackbar(false)}
+          severity="success"
+          sx={{ width: '100%' }}
+        >
+          Data updated successfully
+        </Alert>
+      </Snackbar>
+    </>
   );
 };
 

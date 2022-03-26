@@ -1,23 +1,30 @@
 import { Button } from '@mui/material';
-import { GridColDef, GridValueGetterParams } from '@mui/x-data-grid';
+import { GridColDef } from '@mui/x-data-grid';
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
+import { useProductContext } from '../../context/ProductContext';
 import ProductDialog from '../product/ProductDialog';
 
 const renderActionButton = (params: any) => {
-  const [open, setOpen] = useState(false);
+  const [openModal, setOpenModal] = useState(false);
+  const { updateShowSnackbar } = useProductContext();
 
   const onClick = () => {
     console.log('button clicked', params);
   };
 
   const handleModalClose = () => {
-    setOpen(false);
+    setOpenModal(false);
   };
 
   const handleModalOpen = () => {
-    setOpen(true);
+    setOpenModal(true);
     onClick();
+  };
+
+  const handleSaveData = () => {
+    setOpenModal(false);
+    updateShowSnackbar(true);
   };
 
   return (
@@ -34,29 +41,66 @@ const renderActionButton = (params: any) => {
       >
         View
       </Button>
-      <ProductDialog open={open} onClose={handleModalClose} />
+      <ProductDialog
+        productName="Product"
+        open={openModal}
+        onClose={handleModalClose}
+        onSaveData={handleSaveData}
+      />
     </>
   );
 };
 
 export const columns: GridColDef[] = [
-  { field: 'id', headerName: 'ID', width: 70 },
-  { field: 'firstName', headerName: 'First name', width: 130 },
-  { field: 'lastName', headerName: 'Last name', width: 130 },
+  { field: 'coreNumber', headerName: 'Core Number', width: 130 },
+  { field: 'internalTitle', headerName: 'Internal Title', width: 250 },
   {
-    field: 'age',
-    headerName: 'Age',
-    type: 'number',
-    width: 90,
+    field: 'vendor',
+    headerName: 'Vendor',
+    width: 120,
   },
   {
-    field: 'fullName',
-    headerName: 'Full name',
-    description: 'This column has a value getter and is not sortable.',
+    field: 'vendorSku',
+    headerName: 'Vendor SKU',
     sortable: false,
-    width: 160,
-    valueGetter: (params: GridValueGetterParams) =>
-      `${params.row.firstName || ''} ${params.row.lastName || ''}`,
+    width: 120,
+  },
+  {
+    field: 'vendorOrderUnit',
+    headerName: 'Order Unit',
+    sortable: false,
+    width: 120,
+  },
+  {
+    field: 'moq',
+    headerName: 'MOQ',
+    type: 'number',
+    width: 80,
+  },
+  {
+    field: 'totalQuantity',
+    headerName: 'Total Quantity',
+    type: 'number',
+    width: 120,
+    valueGetter: (params) => {
+      return params.row.totalQuantity || 'Null';
+    },
+  },
+  {
+    field: 'bufferDays',
+    headerName: 'Buffer Days',
+    type: 'number',
+    width: 100,
+  },
+  {
+    field: 'restockable',
+    headerName: 'Restockable',
+    width: 120,
+  },
+  {
+    field: 'active',
+    headerName: 'Active',
+    width: 120,
   },
   {
     field: 'actions',

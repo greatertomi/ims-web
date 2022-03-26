@@ -1,25 +1,50 @@
 import { Button } from '@mui/material';
 import { GridColDef, GridValueGetterParams } from '@mui/x-data-grid';
 import React, { useState } from 'react';
+import { useMutation } from 'react-query';
 import { Link } from 'react-router-dom';
 import { useSnackbarContext } from '../../context/SnackbarContext';
+import apiClient from '../../utils/apiClient';
+import { queryClient } from '../../utils/reactQuery';
 import ProductDialog from '../product/ProductDialog';
 
 const TableActions = ({ params }: { params: GridValueGetterParams }) => {
   const [openModal, setOpenModal] = useState(false);
+  const { mutate } = useMutation(
+    'updateQuantity',
+    (newData) => {
+      return apiClient.put(`/products/${params.id}`, newData);
+    },
+    {
+      onSuccess: async () => {
+        await queryClient.invalidateQueries('products');
+        await queryClient.invalidateQueries(`productLocations${params.id}`);
+      },
+    }
+  );
   const { updateSnackbar } = useSnackbarContext();
 
   const handleModalClose = () => setOpenModal(false);
 
   const handleModalOpen = () => setOpenModal(true);
 
-  const handleSaveData = () => {
-    setOpenModal(false);
-    updateSnackbar({
-      show: true,
-      severity: 'success',
-      message: 'Data updated successfully!',
-    });
+  const handleSaveData = async (values: any) => {
+    try {
+      setOpenModal(false);
+      await mutate(values);
+      updateSnackbar({
+        show: true,
+        severity: 'success',
+        message: 'Data updated successfully!',
+      });
+    } catch (err) {
+      console.error(err);
+      updateSnackbar({
+        show: true,
+        severity: 'error',
+        message: 'Data updated failed!',
+      });
+    }
   };
 
   return (
@@ -37,6 +62,7 @@ const TableActions = ({ params }: { params: GridValueGetterParams }) => {
         View
       </Button>
       <ProductDialog
+        productId={+params.id}
         productName={params.row.internalTitle || 'Product'}
         open={openModal}
         onClose={handleModalClose}

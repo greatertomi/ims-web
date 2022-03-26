@@ -1,3 +1,5 @@
+import { ProductLocation } from './location';
+
 export interface Product {
   id: number;
   coreNumber: string;
@@ -27,5 +29,5 @@ export interface Product {
   ignoreUntil: string | null;
   notes: string | null;
   totalQuantity?: number;
-  locations?: Location[];
+  locations?: ProductLocation[];
 }

@@ -11,10 +11,13 @@ import {
   Select,
   TextField,
 } from '@mui/material';
-import React, { FC } from 'react';
-import { productLocations } from '../../mocks/data';
+import React, { FC, useMemo, useState } from 'react';
+import { useQuery } from 'react-query';
+import { ProductLocation } from '../../types/location';
+import apiClient from '../../utils/apiClient';
 
 interface ProductDialogProps {
+  productId: number;
   productName: string;
   open: boolean;
   onClose: () => void;
@@ -22,12 +25,39 @@ interface ProductDialogProps {
 }
 
 const ProductDialog: FC<ProductDialogProps> = ({
+  productId,
   productName,
   open,
   onClose,
   onSaveData,
 }) => {
-  const locations = productLocations;
+  const { data: locationRes } = useQuery(
+    `productLocations${productId}`,
+    async () => apiClient.get(`/locations/${productId}`)
+  );
+  const locations: ProductLocation[] = locationRes?.data || null;
+  const [values, setValues] = useState({
+    location: '',
+    action: 'add',
+    newQuantity: 1,
+  });
+
+  const handleSaveData = () => {
+    onSaveData(values);
+  };
+
+  const handleChange = (event: any) => {
+    const { name, value } = event.target;
+    setValues({ ...values, [name]: value });
+  };
+
+  useMemo(() => {
+    setValues({
+      ...values,
+      location: locations?.length > 0 ? locations[0].location : '',
+    });
+  }, [locations]);
+
   return (
     <div>
       <Dialog open={open} onClose={onClose}>
@@ -39,11 +69,13 @@ const ProductDialog: FC<ProductDialogProps> = ({
             <Select
               labelId="location-select"
               id="location"
-              value={locations[0].location}
+              name="location"
+              value={values.location}
               label="Locations"
               size="small"
+              onChange={handleChange}
             >
-              {locations.map(({ warehouse, location, quantity }, index) => (
+              {locations?.map(({ warehouse, location, quantity }, index) => (
                 <MenuItem value={location} key={`location${index}`}>
                   {warehouse} ({location}) - {quantity}
                 </MenuItem>
@@ -56,28 +88,31 @@ const ProductDialog: FC<ProductDialogProps> = ({
               <Select
                 labelId="action-select"
                 id="action"
-                value="add"
+                name="action"
+                value={values.action}
                 label="Action"
                 size="small"
+                onChange={handleChange}
               >
                 <MenuItem value="add">Add</MenuItem>
                 <MenuItem value="subtract">subtract</MenuItem>
               </Select>
             </FormControl>
             <TextField
-              autoFocus
-              margin="dense"
-              id="name"
+              id="newQuantity"
+              name="newQuantity"
               placeholder="quantity"
-              type="email"
+              type="number"
+              value={values.newQuantity}
               variant="outlined"
               size="small"
+              onChange={handleChange}
             />
           </Box>
         </DialogContent>
         <DialogActions>
           <Button onClick={onClose}>Cancel</Button>
-          <Button onClick={onSaveData} variant="contained" color="primary">
+          <Button onClick={handleSaveData} variant="contained" color="primary">
             Save
           </Button>
         </DialogActions>

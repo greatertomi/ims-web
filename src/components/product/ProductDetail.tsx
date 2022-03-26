@@ -4,7 +4,7 @@ import { useQuery } from 'react-query';
 import { useParams } from 'react-router-dom';
 import styled from 'styled-components';
 import { useSnackbarContext } from '../../context/SnackbarContext';
-import { ProductLocation } from '../../types/location';
+import { Product } from '../../types/product';
 import apiClient from '../../utils/apiClient';
 import { TableContainer } from '../table/DataTable';
 import ProductRow from './ProductRow';
@@ -19,11 +19,7 @@ const ProductDetail = () => {
   const { data, isLoading, isError } = useQuery(`product${id}`, async () =>
     apiClient.get(`products/${id}`)
   );
-  const { data: locationRes } = useQuery(`productLocations${id}`, async () =>
-    apiClient.get(`locations/${id}`)
-  );
-  const product = data?.data || {};
-  const locations: ProductLocation[] = locationRes?.data;
+  const product: Product = data?.data || {};
 
   if (isError) {
     updateSnackbar({
@@ -50,11 +46,13 @@ const ProductDetail = () => {
         </Box>
         <Box lineHeight={2}>
           <Typography variant="h6">Locations</Typography>
-          {locations?.map(({ warehouse, location, quantity }, index) => (
-            <Box key={`location${index}`}>
-              {warehouse} ({location}): {quantity}
-            </Box>
-          ))}
+          {product.locations?.map(
+            ({ warehouse, location, quantity }, index) => (
+              <Box key={`location${index}`}>
+                {warehouse} ({location}): {quantity}
+              </Box>
+            )
+          )}
         </Box>
       </Box>
       <hr />

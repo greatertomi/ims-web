@@ -1,13 +1,15 @@
-import { Alert, Snackbar } from '@mui/material';
+import { Box, CircularProgress } from '@mui/material';
 import { DataGrid } from '@mui/x-data-grid';
 import React from 'react';
+import { useQuery } from 'react-query';
 import styled from 'styled-components';
-import { useProductContext } from '../../context/ProductContext';
-import { products } from '../../mocks/data';
+import { useSnackbarContext } from '../../context/SnackbarContext';
+import { Product } from '../../types/product';
+import config from '../../utils/config';
 import { columns } from './DataTableDefinition';
 
 export const TableContainer = styled.div`
-  height: 650px;
+  height: 640px;
   width: 90%;
   background: #1a1c28;
   margin-top: 30px;
@@ -17,33 +19,36 @@ export const TableContainer = styled.div`
 `;
 
 const DataTable = () => {
-  const { showSnackbar, updateShowSnackbar } = useProductContext();
+  const {
+    data: products,
+    isLoading,
+    isError,
+  } = useQuery('products', () =>
+    fetch(`${config.BASE_URL}/products`).then((res) => res.json())
+  );
+  const { updateSnackbar } = useSnackbarContext();
 
-  return (
-    <>
-      <TableContainer>
-        <DataGrid
-          rows={products}
-          columns={columns}
-          pageSize={10}
-          rowsPerPageOptions={[10]}
-        />
-      </TableContainer>
-      <Snackbar
-        anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
-        open={showSnackbar}
-        autoHideDuration={6000}
-        onClose={() => updateShowSnackbar(false)}
-      >
-        <Alert
-          onClose={() => updateShowSnackbar(false)}
-          severity="success"
-          sx={{ width: '100%' }}
-        >
-          Data updated successfully
-        </Alert>
-      </Snackbar>
-    </>
+  if (isError) {
+    updateSnackbar({
+      show: true,
+      severity: 'error',
+      message: 'Error occurred while fetching data.',
+    });
+  }
+
+  return isLoading ? (
+    <Box sx={{ display: 'flex', mt: 10 }}>
+      <CircularProgress />
+    </Box>
+  ) : (
+    <TableContainer>
+      <DataGrid
+        rows={products as Product[]}
+        columns={columns}
+        pageSize={10}
+        rowsPerPageOptions={[10]}
+      />
+    </TableContainer>
   );
 };
 

@@ -1,4 +1,4 @@
-import { ProductLocationn } from '../types/location';
+import { ProductLocation } from '../types/location';
 import { Product } from '../types/product';
 
 export const people = [
@@ -172,7 +172,7 @@ export const products: Product[] = [
   },
 ];
 
-export const productLocations: ProductLocationn[] = [
+export const productLocations: ProductLocation[] = [
   {
     id: 12,
     warehouse: '2. Pre-Processed',

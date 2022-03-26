@@ -1,7 +1,11 @@
-import { Box, Typography } from '@mui/material';
+import { Box, CircularProgress, Typography } from '@mui/material';
 import React from 'react';
+import { useQuery } from 'react-query';
+import { useParams } from 'react-router-dom';
 import styled from 'styled-components';
-import { productLocations, products } from '../../mocks/data';
+import { useSnackbarContext } from '../../context/SnackbarContext';
+import { ProductLocation } from '../../types/location';
+import apiClient from '../../utils/apiClient';
 import { TableContainer } from '../table/DataTable';
 import ProductRow from './ProductRow';
 
@@ -10,9 +14,30 @@ const ProductDetailContainer = styled(TableContainer)`
 `;
 
 const ProductDetail = () => {
-  const product = products[0];
-  const locations = productLocations;
-  return (
+  const { id } = useParams();
+  const { updateSnackbar } = useSnackbarContext();
+  const { data, isLoading, isError } = useQuery(`product${id}`, async () =>
+    apiClient.get(`products/${id}`)
+  );
+  const { data: locationRes } = useQuery(`productLocations${id}`, async () =>
+    apiClient.get(`locations/${id}`)
+  );
+  const product = data?.data || {};
+  const locations: ProductLocation[] = locationRes?.data;
+
+  if (isError) {
+    updateSnackbar({
+      show: true,
+      severity: 'error',
+      message: 'Error occurred while fetching product details.',
+    });
+  }
+
+  return isLoading ? (
+    <Box sx={{ display: 'flex', mt: 10 }}>
+      <CircularProgress />
+    </Box>
+  ) : (
     <ProductDetailContainer>
       <Box
         display="flex"
@@ -25,8 +50,8 @@ const ProductDetail = () => {
         </Box>
         <Box lineHeight={2}>
           <Typography variant="h6">Locations</Typography>
-          {locations.map(({ warehouse, location, quantity }) => (
-            <Box>
+          {locations?.map(({ warehouse, location, quantity }, index) => (
+            <Box key={`location${index}`}>
               {warehouse} ({location}): {quantity}
             </Box>
           ))}

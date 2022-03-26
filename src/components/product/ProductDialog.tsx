@@ -43,8 +43,8 @@ const ProductDialog: FC<ProductDialogProps> = ({
               label="Locations"
               size="small"
             >
-              {locations.map(({ warehouse, location, quantity }) => (
-                <MenuItem value={location}>
+              {locations.map(({ warehouse, location, quantity }, index) => (
+                <MenuItem value={location} key={`location${index}`}>
                   {warehouse} ({location}) - {quantity}
                 </MenuItem>
               ))}

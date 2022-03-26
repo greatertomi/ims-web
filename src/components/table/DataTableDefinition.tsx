@@ -1,30 +1,25 @@
 import { Button } from '@mui/material';
-import { GridColDef } from '@mui/x-data-grid';
+import { GridColDef, GridValueGetterParams } from '@mui/x-data-grid';
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { useProductContext } from '../../context/ProductContext';
+import { useSnackbarContext } from '../../context/SnackbarContext';
 import ProductDialog from '../product/ProductDialog';
 
-const renderActionButton = (params: any) => {
+const TableActions = ({ params }: { params: GridValueGetterParams }) => {
   const [openModal, setOpenModal] = useState(false);
-  const { updateShowSnackbar } = useProductContext();
+  const { updateSnackbar } = useSnackbarContext();
 
-  const onClick = () => {
-    console.log('button clicked', params);
-  };
+  const handleModalClose = () => setOpenModal(false);
 
-  const handleModalClose = () => {
-    setOpenModal(false);
-  };
-
-  const handleModalOpen = () => {
-    setOpenModal(true);
-    onClick();
-  };
+  const handleModalOpen = () => setOpenModal(true);
 
   const handleSaveData = () => {
     setOpenModal(false);
-    updateShowSnackbar(true);
+    updateSnackbar({
+      show: true,
+      severity: 'success',
+      message: 'Data updated successfully!',
+    });
   };
 
   return (
@@ -42,7 +37,7 @@ const renderActionButton = (params: any) => {
         View
       </Button>
       <ProductDialog
-        productName="Product"
+        productName={params.row.internalTitle || 'Product'}
         open={openModal}
         onClose={handleModalClose}
         onSaveData={handleSaveData}
@@ -107,6 +102,8 @@ export const columns: GridColDef[] = [
     headerName: 'Actions',
     width: 180,
     sortable: false,
-    renderCell: renderActionButton,
+    renderCell: (params: GridValueGetterParams) => (
+      <TableActions params={params} />
+    ),
   },
 ];

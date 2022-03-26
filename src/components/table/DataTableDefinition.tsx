@@ -10,7 +10,7 @@ import ProductDialog from '../product/ProductDialog';
 
 const TableActions = ({ params }: { params: GridValueGetterParams }) => {
   const [openModal, setOpenModal] = useState(false);
-  const { mutate } = useMutation(
+  const { mutateAsync } = useMutation(
     'updateQuantity',
     (newData) => {
       return apiClient.put(`/products/${params.id}`, newData);
@@ -31,7 +31,7 @@ const TableActions = ({ params }: { params: GridValueGetterParams }) => {
   const handleSaveData = async (values: any) => {
     try {
       setOpenModal(false);
-      await mutate(values);
+      await mutateAsync(values);
       updateSnackbar({
         show: true,
         severity: 'success',
@@ -42,7 +42,7 @@ const TableActions = ({ params }: { params: GridValueGetterParams }) => {
       updateSnackbar({
         show: true,
         severity: 'error',
-        message: 'Data updated failed!',
+        message: 'Data update failed!',
       });
     }
   };

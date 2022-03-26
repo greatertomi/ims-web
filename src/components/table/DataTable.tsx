@@ -5,7 +5,7 @@ import { useQuery } from 'react-query';
 import styled from 'styled-components';
 import { useSnackbarContext } from '../../context/SnackbarContext';
 import { Product } from '../../types/product';
-import config from '../../utils/config';
+import apiClient from '../../utils/apiClient';
 import { columns } from './DataTableDefinition';
 
 export const TableContainer = styled.div`
@@ -19,14 +19,11 @@ export const TableContainer = styled.div`
 `;
 
 const DataTable = () => {
-  const {
-    data: products,
-    isLoading,
-    isError,
-  } = useQuery('products', () =>
-    fetch(`${config.BASE_URL}/products`).then((res) => res.json())
+  const { data, isLoading, isError } = useQuery('products', () =>
+    apiClient.get('/products')
   );
   const { updateSnackbar } = useSnackbarContext();
+  const products: Product[] = data?.data || [];
 
   if (isError) {
     updateSnackbar({
@@ -43,7 +40,7 @@ const DataTable = () => {
   ) : (
     <TableContainer>
       <DataGrid
-        rows={products as Product[]}
+        rows={products}
         columns={columns}
         pageSize={10}
         rowsPerPageOptions={[10]}

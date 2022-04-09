@@ -10,6 +10,7 @@ export const DataPageContainer = styled.div`
   align-items: center;
 `;
 
+// A few more thoughts coming
 const DataPage = () => {
   return (
     <DataPageContainer>
